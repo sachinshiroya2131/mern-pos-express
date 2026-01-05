@@ -12,7 +12,7 @@ exports.index = async (req, res) => {
 
         const total = await Category.countDocuments();
 
-        const categories = await Category.find()
+        const categories = await Category.find({parent_id: null})
             .sort({ parent_id: 1, name: 1 })
             .skip(skip)
             .limit(limit);
@@ -99,4 +99,30 @@ exports.update = async (req, res) => {
 exports.destroy = async (req, res) => {
     await Category.findByIdAndDelete(req.params.id);
     res.json({ message: "Category deleted successfully" });
+};
+
+exports.parentCategories = async (req, res) => {
+    try {
+        const parentId = req.params.id;
+
+        let query;
+
+        if (parentId) {
+            query = { parent_id: { $ne: parentId } };
+        } else {
+            query = {};
+        }
+
+        console.log("Parent ID:", parentId);
+
+        const categories = await Category.find(query).sort({ name: 1 });
+
+        res.status(200).json({
+            message: "Category created successfully",
+            data: categories,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
