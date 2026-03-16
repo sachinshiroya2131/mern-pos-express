@@ -40,3 +40,4 @@ coverage/
 .npm
 .eslintcache
 .node_repl_history
+uploads/

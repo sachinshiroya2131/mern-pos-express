@@ -76,15 +76,21 @@ exports.show = async (req, res) => {
 exports.update = async (req, res) => {
     const { name, parent_id, status } = req.body;
 
+    const data = {
+        name,
+        parent_id: parent_id || null,
+        status: status ?? true,
+    };
+
+    if (req.file) {
+        data.image = `/uploads/${req.file.filename}`;
+    }
+
+    console.log("Updating category with data:", req.params.id, data);
+
     const category = await Category.findByIdAndUpdate(
         req.params.id,
-        {
-            name,
-            slug: slugify(name, { lower: true }),
-            parent_id: parent_id || null,
-            status,
-        },
-        { new: true }
+        data,
     );
 
     res.json({
